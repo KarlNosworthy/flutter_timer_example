@@ -119,3 +119,8 @@ app.*.symbols
 !/dev/ci/**/Gemfile.lock
 # Commit the app lockfile despite the *.lock rule above
 !pubspec.lock
+!ios/Podfile.lock
+
+# IDE files
+.idea/
+*.iml
