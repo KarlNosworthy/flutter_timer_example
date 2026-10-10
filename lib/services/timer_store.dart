@@ -56,9 +56,33 @@ class TimerStore {
     return timers[index];
   }
 
+  /// Marks every unfired timer whose time has passed as fired at its
+  /// scheduled time, and returns the updated list.
+  Future<List<TimerEntry>> markOverdueFired(DateTime now) async {
+    final timers = markOverdue(await loadAll(), now);
+    if (timers.changed) await _saveAll(timers.entries);
+    return timers.entries;
+  }
+
   Future<void> clearFired() async {
     final timers = await loadAll();
     timers.removeWhere((t) => t.hasFired);
     await _saveAll(timers);
   }
+}
+
+/// Pure helper behind [TimerStore.markOverdueFired], kept separate for tests.
+({List<TimerEntry> entries, bool changed}) markOverdue(
+    List<TimerEntry> timers, DateTime now) {
+  var changed = false;
+  final entries = <TimerEntry>[];
+  for (final t in timers) {
+    if (!t.hasFired && !t.scheduledFor.isAfter(now)) {
+      entries.add(t.copyWith(firedAt: t.scheduledFor));
+      changed = true;
+    } else {
+      entries.add(t);
+    }
+  }
+  return (entries: entries, changed: changed);
 }

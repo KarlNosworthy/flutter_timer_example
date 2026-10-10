@@ -118,7 +118,7 @@ class _NewTimerScreenState extends State<NewTimerScreen> {
             onChanged: (v) => setState(() => _action = v!),
             child: Column(
               children: [
-                for (final action in TimerAction.values)
+                for (final action in AlarmService.supportedActions)
                   RadioListTile<TimerAction>(
                     value: action,
                     title: Text(action.label),
